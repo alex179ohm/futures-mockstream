@@ -1,3 +1,16 @@
+//! Futures MockStream gives you a MockStream for testing your custom AsyncRead, AsyncWrite and
+//! Streams implementations.
+//!
+//! # Examples
+//! ```no-run
+//!# use futures_mockstream::MockStream;
+//!let mut ms = MockStream::from(&b"GET /index HTTP/1.1\r\n");
+//!smol::run(async {
+//!     for item in MyStream.read(&mut ms).next().await {
+//!         println!("{}", item);
+//!     }
+//!})
+//! ```
 use futures_core::Stream;
 use futures_io::{AsyncRead, AsyncWrite};
 use futures_task::{Context, Poll};
@@ -107,6 +120,7 @@ impl AsRef<[u8]> for MockStream {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use futures_util::stream::StreamExt;
     use futures_util::{AsyncReadExt, AsyncWriteExt};
 
     #[test]
@@ -149,6 +163,37 @@ mod tests {
             let written = ms.write(buf).await.expect("failed to write");
             assert_ne!(written, 0);
             assert_eq!(&buf[..], ms.as_ref());
+        })
+    }
+
+    #[test]
+    fn async_stream_none() {
+        let buf: &[u8] = &[];
+        let mut ms = MockStream::from(&buf);
+        smol::run(async {
+            if let Some(v) = ms.next().await {
+                match v {
+                    Ok(b) => assert_eq!(b.len(), 0),
+                    Err(e) => panic!("{}", e),
+                }
+            }
+        })
+    }
+
+    #[test]
+    fn async_stream_sized() {
+        let buf = b"this is my packet";
+        let mut ms = MockStream::from(buf);
+        smol::run(async {
+            if let Some(v) = ms.next().await {
+                match v {
+                    Ok(b) => {
+                        assert_eq!(b.len(), buf.len());
+                        assert_eq!(&buf[..], buf.as_ref());
+                    }
+                    Err(e) => panic!("{}", e),
+                }
+            }
         })
     }
 }
