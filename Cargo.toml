@@ -3,8 +3,13 @@ name = "futures-mockstream"
 version = "0.1.0"
 authors = ["Alessandro Cresto Miseroglio <alex179ohm@gmail.com>"]
 edition = "2018"
+license = "MIT OR Apache-2.0"
+description= "Minimal mockstream which implements futures async traits"
+repository = "https://github.com/alex179ohm/future-mockstream"
+keywords = ["async", "mock","stream", "futures"]
+categories = ["asynchronous"]
+readme = "README.md"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 futures-io = "0.3.4"
