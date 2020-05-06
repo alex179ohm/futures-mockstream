@@ -44,7 +44,7 @@ with [smol](https://github.com/stjepang/smol)
 
 
 ```rust
-use futures-mockStream::MockStream;
+use futures_mockstream::MockStream;
 use smol;
 
 
