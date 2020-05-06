@@ -10,13 +10,12 @@
 
 <div align="center">
   <a href="https://github.com/alex179ohm/futures-mockstream/actions?query=workflow%3ABuild">
-    <img src="https://github.com/wolf4ood/wait-for-me/workflows/Tests/badge.svg"
+    <img src="https://github.com/wolf4ood/futures-mockstream/workflows/Tests/badge.svg"
     alt="Tests status" />
   </a>
 
   <a href="https://crates.io/crates/futures-mockstream">
-    <img src="https://img.shields.io/crates/d/futures-mockstream.svg?style=flat-square"
-      alt="Download" />
+    <img src="https://img.shields.io/crates/d/futures-mockstream.svg?style=flat-square"/>
   </a>
   <a href="https://docs.rs/futures-mockstream">
     <img src="https://img.shields.io/badge/docs-latest-blue.svg?style=flat-square"
