@@ -33,7 +33,7 @@ Install from [crates.io](https://crates.io)
 
 ```
 [dependencies]
-futures-mockstream = "0.1"
+futures-mockstream = "0.1.2"
 ```
 
 

@@ -4,6 +4,10 @@
 //! # Examples
 //! ```compile_fail
 //!# use futures_mockstream::MockStream;
+//!struct MyConn<S> {
+//!     stream: S,
+//!}
+//!
 //!let mut ms = MockStream::from(&b"GET /index HTTP/1.1\r\n");
 //!smol::run(async {
 //!     while let Some(item) = MyConn::new(&mut ms).next().await {
