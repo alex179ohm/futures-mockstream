@@ -2,11 +2,11 @@
 //! Streams implementations.
 //!
 //! # Examples
-//! ```no-run
+//! ```compile_fail
 //!# use futures_mockstream::MockStream;
 //!let mut ms = MockStream::from(&b"GET /index HTTP/1.1\r\n");
 //!smol::run(async {
-//!     for item in MyStream.read(&mut ms).next().await {
+//!     while let Some(item) = MyConn::new(&mut ms).next().await {
 //!         println!("{}", item);
 //!     }
 //!})
@@ -14,10 +14,7 @@
 use futures_core::Stream;
 use futures_io::{AsyncRead, AsyncWrite};
 use futures_task::{Context, Poll};
-use std::io;
-use std::io::Cursor;
-use std::io::{Read, Write};
-use std::io::{Seek, SeekFrom};
+use std::io::{self, Cursor, Read, Write};
 use std::pin::Pin;
 
 /// A Mock Stream with implements AsyncRead, AsyncWrite, and Stream from the futures crate.
@@ -27,7 +24,7 @@ use std::pin::Pin;
 /// # use futures_mockstream::MockStream;
 /// let mock_stream = MockStream::from(&b"mock stream buffer"[..]);
 /// ```
-#[derive(Default, Clone)]
+#[derive(Default, Debug)]
 pub struct MockStream {
     buf: Cursor<Vec<u8>>,
     from_index: usize,
@@ -61,16 +58,7 @@ impl AsyncRead for MockStream {
         buf: &mut [u8],
     ) -> Poll<io::Result<usize>> {
         let this: &mut Self = Pin::into_inner(self);
-        this.buf
-            .seek(SeekFrom::Start(this.from_index as u64))
-            .unwrap();
-        match this.buf.read(buf) {
-            Ok(readed) => {
-                this.from_index += readed;
-                Poll::Ready(Ok(readed))
-            }
-            Err(e) => Poll::Ready(Err(e)),
-        }
+        Poll::Ready(this.buf.read(buf))
     }
 }
 
@@ -81,10 +69,7 @@ impl AsyncWrite for MockStream {
         buf: &[u8],
     ) -> Poll<io::Result<usize>> {
         let this: &mut Self = Pin::into_inner(self);
-        match this.buf.write(buf) {
-            Ok(written) => Poll::Ready(Ok(written)),
-            Err(e) => Poll::Ready(Err(e)),
-        }
+        Poll::Ready(this.buf.write(buf))
     }
 
     fn poll_flush(self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<io::Result<()>> {
@@ -101,11 +86,10 @@ impl Stream for MockStream {
     fn poll_next(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
         let this: &mut Self = Pin::into_inner(self);
         let mut buf = [0u8; 1024];
-        let content = this.clone();
         match Pin::new(this).poll_read(cx, &mut buf) {
-            Poll::Pending => Poll::Pending,
+            Poll::Pending => Poll::Ready(None),
             Poll::Ready(Ok(b)) if b == 0 => Poll::Ready(None),
-            Poll::Ready(Ok(_)) => Poll::Ready(Some(Ok(Vec::from(content.as_ref())))),
+            Poll::Ready(Ok(b)) => Poll::Ready(Some(Ok(Vec::from(&buf[..b])))),
             Poll::Ready(Err(e)) => Poll::Ready(Some(Err(e))),
         }
     }
@@ -142,6 +126,7 @@ mod tests {
             let readed = ms.read(&mut buf).await.expect("failed to read");
             assert_eq!(readed, 10);
             assert_eq!(&b"ciao mondo"[..], &buf[..readed]);
+            dbg!(ms);
         })
     }
 
@@ -171,7 +156,7 @@ mod tests {
         let buf: &[u8] = &[];
         let mut ms = MockStream::from(&buf);
         smol::run(async {
-            if let Some(v) = ms.next().await {
+            while let Some(v) = ms.next().await {
                 match v {
                     Ok(b) => assert_eq!(b.len(), 0),
                     Err(e) => panic!("{}", e),
@@ -185,7 +170,7 @@ mod tests {
         let buf = b"this is my packet";
         let mut ms = MockStream::from(buf);
         smol::run(async {
-            if let Some(v) = ms.next().await {
+            while let Some(v) = ms.next().await {
                 match v {
                     Ok(b) => {
                         assert_eq!(b.len(), buf.len());
