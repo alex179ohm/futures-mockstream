@@ -1,11 +1,12 @@
 [package]
 name = "futures-mockstream"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Alessandro Cresto Miseroglio <alex179ohm@gmail.com>"]
 edition = "2018"
 license = "MIT OR Apache-2.0"
 description= "Minimal mockstream which implements futures async traits"
-repository = "https://github.com/alex179ohm/future-mockstream"
+repository = "https://github.com/alex179ohm/futures-mockstream"
+homepage= "https://github.com/alex179ohm/futures-mockstream"
 keywords = ["async", "mock","stream", "futures"]
 categories = ["asynchronous"]
 readme = "README.md"
