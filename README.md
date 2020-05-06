@@ -53,13 +53,15 @@ use smol;
 mod tests {
     #[test]
     fn async_read() {
-        let mut mockstream = MockStream::from(&b"GET /index HTTP/1.1\r\n");
-        while let Some(resp) = MyConn::with_stream(mockstream).next().await {
-            match resp {
-                Ok(r) => { // your asserts },
-                Err(e) => {},
+        smol::run(async {
+            let mut mockstream = MockStream::from(&b"GET /index HTTP/1.1\r\n");
+            while let Some(resp) = MyConn::with_stream(mockstream).next().await {
+                match resp {
+                    Ok(r) => { // your asserts },
+                    Err(e) => {},
+                }
             }
-        }
+        })
     }
 }
 ```
