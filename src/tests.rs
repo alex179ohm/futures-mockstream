@@ -3,7 +3,7 @@ use futures_util::stream::StreamExt;
 use futures_util::{AsyncReadExt, AsyncWriteExt};
 
 #[test]
-fn async_read() {
+fn async_read_none() {
     let mut ms = MockStream::default();
     let mut buf = [0u8; 1024];
     smol::run(async {
@@ -26,7 +26,7 @@ fn async_read_sized() {
 }
 
 #[test]
-fn async_write() {
+fn async_write_none() {
     let buf = &[];
     let mut ms = MockStream::default();
     smol::run(async {
