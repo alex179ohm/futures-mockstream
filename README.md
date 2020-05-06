@@ -10,7 +10,7 @@
 
 <div align="center">
   <a href="https://github.com/alex179ohm/futures-mockstream/actions?query=workflow%3ABuild">
-    <img src="https://github.com/wolf4ood/futures-mockstream/workflows/Tests/badge.svg"
+    <img src="https://github.com/alex179ohm/futures-mockstream/workflows/Build/badge.svg"
     alt="Tests status" />
   </a>
 
