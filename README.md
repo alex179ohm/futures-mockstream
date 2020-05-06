@@ -1,7 +1,7 @@
 <h1 align="center">Futures MockStream</h1>
 <div align="center">
   <strong>
-    MockStream for <a href="https://crates.io/crates/futures"futures</a> crate Async{Read, Write} and Stream traits
+    MockStream for <a href="https://crates.io/crates/futures">futures</a> crate Async{Read, Write} and Stream traits
 
   </strong>
 </div>
