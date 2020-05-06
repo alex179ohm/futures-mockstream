@@ -15,7 +15,7 @@
   </a>
 
   <a href="https://crates.io/crates/futures-mockstream">
-    <img src="https://img.shields.io/crates/d/futures-mockstream.svg?style=flat-square"/>
+    <img src="https://img.shields.io/crates/v/futures-mockstream.svg?style=flat-square"/>
   </a>
   <a href="https://docs.rs/futures-mockstream">
     <img src="https://img.shields.io/badge/docs-latest-blue.svg?style=flat-square"
