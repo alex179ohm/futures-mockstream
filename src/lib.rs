@@ -70,6 +70,10 @@ impl MockStream {
     pub fn len(&self) -> usize {
         self.packets.len()
     }
+
+    pub fn is_empty(&self) -> bool {
+        self.packets.is_empty()
+    }
 }
 
 impl From<&[&[u8]]> for MockStream {
