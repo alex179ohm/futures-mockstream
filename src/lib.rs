@@ -41,7 +41,7 @@ impl Default for MockStream {
     fn default() -> Self {
         Self {
             index: 0,
-            packets: vec![Packet::default()],
+            packets: Vec::new(),
         }
     }
 }
@@ -94,6 +94,12 @@ impl AsyncRead for MockStream {
         buf: &mut [u8],
     ) -> Poll<io::Result<usize>> {
         let this: &mut Self = Pin::into_inner(self);
+        if this.packets.is_empty() {
+            return Poll::Ready(Err(io::Error::new(
+                io::ErrorKind::Other,
+                "trying to read an empty Mockstream",
+            )));
+        }
         this.index += 1;
         // needed by the last poll_next call.
         if this.index >= this.packets.len() {
@@ -141,6 +147,6 @@ impl Stream for MockStream {
 
 impl AsRef<[u8]> for MockStream {
     fn as_ref(&self) -> &[u8] {
-        self.packets[0].as_ref()
+        self.packets[self.index - 1].as_ref()
     }
 }

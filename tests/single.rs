@@ -3,8 +3,18 @@ use futures_util::stream::StreamExt;
 use futures_util::{AsyncReadExt, AsyncWriteExt};
 
 #[test]
-fn single_read_none() {
+fn error_read() {
     let mut ms = MockStream::default();
+    smol::run(async {
+        let res = ms.read(&mut [0u8]).await;
+        assert!(res.is_err())
+    })
+}
+
+#[test]
+fn single_read_empty() {
+    let packet: &[u8] = &[];
+    let mut ms = MockStream::with_buffer(packet);
     let mut buf = [0u8; 1024];
     smol::run(async {
         let readed = ms.read(&mut buf).await.expect("failed to read");
@@ -26,17 +36,18 @@ fn single_read_sized() {
 }
 
 #[test]
-fn single_write_none() {
+fn single_write_empty() {
     let buf = &[];
     let mut ms = MockStream::default();
     smol::run(async {
         let written = ms.write(buf).await.expect("failed to write");
         assert_eq!(written, 0);
+        assert_eq!(ms.len(), 1);
     })
 }
 
 #[test]
-fn single_write_sized() {
+fn single_write() {
     let buf = b"this is the packet";
     let mut ms = MockStream::default();
     smol::run(async {
@@ -47,7 +58,7 @@ fn single_write_sized() {
 }
 
 #[test]
-fn single_stream_none() {
+fn single_stream_empty() {
     let buf: &[u8] = &[];
     let mut ms = MockStream::with_buffer(&buf);
     smol::run(async {
@@ -61,7 +72,7 @@ fn single_stream_none() {
 }
 
 #[test]
-fn single_stream_sized() {
+fn single_stream() {
     let buf = b"this is my packet";
     let mut ms = MockStream::with_buffer(buf);
     smol::run(async {
@@ -78,7 +89,7 @@ fn single_stream_sized() {
 }
 
 #[test]
-fn single_flush_none() {
+fn single_flush_empty() {
     let buf: &[u8] = &[];
     let mut ms = MockStream::with_buffer(&buf);
     smol::run(async {
@@ -92,7 +103,7 @@ fn single_flush_none() {
 }
 
 #[test]
-fn single_flush_sized() {
+fn single_flush() {
     let packet = b"this is my brocken packet";
     let mut ms = MockStream::with_buffer(packet);
     smol::run(async {

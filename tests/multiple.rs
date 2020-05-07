@@ -3,7 +3,7 @@ use futures_util::stream::StreamExt;
 use futures_util::{AsyncReadExt, AsyncWriteExt};
 
 #[test]
-fn multiple_read_none() {
+fn multiple_read_empty() {
     let packets: &[&[u8]] = &[&[], &[]];
     let mut ms = MockStream::from(&packets[..]);
     smol::run(async {
@@ -17,7 +17,7 @@ fn multiple_read_none() {
 }
 
 #[test]
-fn multiple_read_sized() {
+fn multiple_read() {
     let packets: &[&[u8]] = &[&b"first packet"[..], &b"second packet"[..]];
     let mut ms = MockStream::from(&packets[..]);
     smol::run(async {
@@ -32,7 +32,7 @@ fn multiple_read_sized() {
 }
 
 #[test]
-fn multiple_write_none() {
+fn multiple_write_empty() {
     let packets: &[&[u8]] = &[&[], &[]];
     let mut ms = MockStream::default();
     smol::run(async {
@@ -45,7 +45,7 @@ fn multiple_write_none() {
 }
 
 #[test]
-fn multiple_write_sized() {
+fn multiple_write() {
     let packets: &[&[u8]] = &[&b"first packet"[..], &b"second packet"[..]];
     let mut ms = MockStream::from(&packets[..]);
     smol::run(async {
@@ -58,7 +58,7 @@ fn multiple_write_sized() {
 }
 
 #[test]
-fn multiple_stream_none() {
+fn multiple_stream_empty() {
     let packets: &[&[u8]] = &[&[], &[]];
     let mut ms = MockStream::from(&packets[..]);
     smol::run(async {
@@ -71,7 +71,7 @@ fn multiple_stream_none() {
 }
 
 #[test]
-fn multiple_stream_sized() {
+fn multiple_stream() {
     let packets: &[&[u8]] = &[&b"first packet"[..], &b"second packet"[..]];
     let mut ms = MockStream::from(&packets[..]);
     smol::run(async {
@@ -84,17 +84,31 @@ fn multiple_stream_sized() {
 }
 
 #[test]
-fn multiple_flush_none() {
+fn multiple_flush_empty() {
     let packets: &[&[u8]] = &[&[], &[]];
-    let mut ms = MockStream::from(&packets[..]);
+    let mut ms = MockStream::default();
     smol::run(async {
-        for _i in 0..ms.len() - 1 {
-            let mut buf = [0u8; 1024];
-            let readed = ms.read(&mut buf).await.expect("failed to read");
-            assert_eq!(0, readed);
+        for i in 0..packets.len() - 1 {
+            let _ = ms.write(packets[i]).await;
             let _ = ms.flush().await;
-            let readed = ms.read(&mut buf).await.expect("failed to read");
-            assert_eq!(0, readed);
+            assert_eq!(packets[i].len(), ms.as_ref().len());
+            assert_eq!(packets[i], ms.as_ref());
+            assert_eq!(i + 1, ms.len());
+        }
+    })
+}
+
+#[test]
+fn multiple_flush() {
+    let packets: &[&[u8]] = &[&b"first packet"[..], &b"second packet"[..]];
+    let mut ms = MockStream::default();
+    smol::run(async {
+        for i in 0..packets.len() - 1 {
+            let _ = ms.write(packets[i]).await;
+            let _ = ms.flush().await;
+            assert_eq!(packets[i].len(), ms.as_ref().len());
+            assert_eq!(packets[i], ms.as_ref());
+            assert_eq!(i + 1, ms.len());
         }
     })
 }
