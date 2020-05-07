@@ -12,6 +12,7 @@ impl From<&[u8]> for Packet {
         }
     }
 }
+
 impl Read for Packet {
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
         self.buffer.read(buf)

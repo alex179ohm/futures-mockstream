@@ -99,6 +99,7 @@ fn single_flush_sized() {
         let mut buf = [0u8; 1024];
         let readed = ms.read(&mut buf).await.expect("failed to read");
         assert_eq!(packet.len(), readed);
+        assert_eq!(packet, &buf[..readed]);
         let _ = ms.flush().await;
         let readed = ms.read(&mut buf).await.expect("failed to read");
         assert_eq!(0, readed);
