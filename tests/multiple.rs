@@ -62,10 +62,10 @@ fn multiple_stream_none() {
     let packets: &[&[u8]] = &[&[], &[]];
     let mut ms = MockStream::from(&packets[..]);
     smol::run(async {
-        for i in 0..ms.len() - 1 {
-            while let Some(p) = ms.next().await {
-                assert_eq!(p.unwrap(), packets[i]);
-            }
+        let mut index = 0;
+        while let Some(p) = ms.next().await {
+            assert_eq!(p.unwrap(), packets[index]);
+            index += 1;
         }
     })
 }
@@ -75,10 +75,10 @@ fn multiple_stream_sized() {
     let packets: &[&[u8]] = &[&b"first packet"[..], &b"second packet"[..]];
     let mut ms = MockStream::from(&packets[..]);
     smol::run(async {
-        for i in 0..ms.len() - 1 {
-            while let Some(p) = ms.next().await {
-                assert_eq!(p.unwrap(), packets[i]);
-            }
+        let mut index = 0;
+        while let Some(p) = ms.next().await {
+            assert_eq!(p.unwrap(), packets[index]);
+            index += 1;
         }
     })
 }

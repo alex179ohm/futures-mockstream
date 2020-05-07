@@ -76,3 +76,17 @@ fn single_stream_sized() {
         }
     })
 }
+
+#[test]
+fn single_flush_none() {
+    let buf: &[u8] = &[];
+    let mut ms = MockStream::with_buffer(&buf);
+    smol::run(async {
+        let mut buf = [0u8; 1024];
+        let readed = ms.read(&mut buf).await.expect("failed to read");
+        assert_eq!(0, readed);
+        let _ = ms.flush().await;
+        let readed = ms.read(&mut buf).await.expect("failed to read");
+        assert_eq!(0, readed);
+    })
+}

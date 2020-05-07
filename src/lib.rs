@@ -89,13 +89,12 @@ impl AsyncRead for MockStream {
         buf: &mut [u8],
     ) -> Poll<io::Result<usize>> {
         let this: &mut Self = Pin::into_inner(self);
-        let index = if this.index < this.packets.len() - 1 {
-            this.index
-        } else {
-            0
-        };
         this.index += 1;
-        Poll::Ready(this.packets[index].read(buf))
+        // needed by the last poll_next call.
+        if this.index >= this.packets.len() {
+            this.index = this.len()
+        }
+        Poll::Ready(this.packets[this.index - 1].read(buf))
     }
 }
 
@@ -113,13 +112,7 @@ impl AsyncWrite for MockStream {
 
     fn poll_flush(self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<io::Result<()>> {
         let this: &mut Self = Pin::into_inner(self);
-        let index = if this.index < this.packets.len() - 1 {
-            this.index
-        } else {
-            0
-        };
-        this.index += 1;
-        Poll::Ready(this.packets[index].flush())
+        Poll::Ready(this.packets[this.index - 1].flush())
     }
 
     fn poll_close(self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<io::Result<()>> {
