@@ -90,3 +90,17 @@ fn single_flush_none() {
         assert_eq!(0, readed);
     })
 }
+
+#[test]
+fn single_flush_sized() {
+    let packet = b"this is my brocken packet";
+    let mut ms = MockStream::with_buffer(packet);
+    smol::run(async {
+        let mut buf = [0u8; 1024];
+        let readed = ms.read(&mut buf).await.expect("failed to read");
+        assert_eq!(packet.len(), readed);
+        let _ = ms.flush().await;
+        let readed = ms.read(&mut buf).await.expect("failed to read");
+        assert_eq!(0, readed);
+    })
+}
