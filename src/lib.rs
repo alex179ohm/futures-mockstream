@@ -71,6 +71,7 @@ impl MockStream {
         self.packets.len()
     }
 
+    /// Checks if MockStream is empty.
     pub fn is_empty(&self) -> bool {
         self.packets.is_empty()
     }
