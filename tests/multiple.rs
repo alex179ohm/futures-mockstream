@@ -82,3 +82,19 @@ fn multiple_stream_sized() {
         }
     })
 }
+
+#[test]
+fn multiple_flush_none() {
+    let packets: &[&[u8]] = &[&[], &[]];
+    let mut ms = MockStream::from(&packets[..]);
+    smol::run(async {
+        for _i in 0..ms.len() - 1 {
+            let mut buf = [0u8; 1024];
+            let readed = ms.read(&mut buf).await.expect("failed to read");
+            assert_eq!(0, readed);
+            let _ = ms.flush().await;
+            let readed = ms.read(&mut buf).await.expect("failed to read");
+            assert_eq!(0, readed);
+        }
+    })
+}
