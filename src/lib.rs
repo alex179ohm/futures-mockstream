@@ -21,9 +21,6 @@ use futures_task::{Context, Poll};
 use std::io::{self, Read, Write};
 use std::pin::Pin;
 
-#[cfg(test)]
-mod tests;
-
 mod packet;
 use crate::packet::Packet;
 
@@ -32,7 +29,7 @@ use crate::packet::Packet;
 /// # Examples
 /// ```
 /// # use futures_mockstream::MockStream;
-/// let mock_stream = MockStream::from(&b"mock stream buffer"[..]);
+/// let mock_stream = MockStream::with_buffer(&b"mock stream buffer"[..]);
 /// ```
 #[derive(Debug)]
 pub struct MockStream {
@@ -60,22 +57,28 @@ impl MockStream {
     /// # Examples
     /// ```
     /// # use futures_mockstream::MockStream;
-    /// let mockstream = MockStream::from("hello".as_bytes());
+    /// let mockstream = MockStream::with_buffer("hello".as_bytes());
     /// ```
-    pub fn from(buf: &[u8]) -> Self {
+    pub fn with_buffer(buf: &[u8]) -> Self {
         Self {
             index: 0,
             packets: vec![Packet::from(buf)],
         }
     }
+
+    /// Returns the number of packets of the MockStream.
+    pub fn len(&self) -> usize {
+        self.packets.len()
+    }
 }
 
 impl From<&[&[u8]]> for MockStream {
     fn from(buf: &[&[u8]]) -> Self {
-        Self {
-            index: 0,
-            packets: vec![Packet::from(buf[0])],
-        }
+        let packets = buf
+            .iter()
+            .map(|b| Packet::from(*b))
+            .collect::<Vec<Packet>>();
+        Self { index: 0, packets }
     }
 }
 
@@ -103,13 +106,9 @@ impl AsyncWrite for MockStream {
         buf: &[u8],
     ) -> Poll<io::Result<usize>> {
         let this: &mut Self = Pin::into_inner(self);
-        let index = if this.index < this.packets.len() - 1 {
-            this.index
-        } else {
-            0
-        };
+        this.packets.push(Packet::default());
         this.index += 1;
-        Poll::Ready(this.packets[index].write(buf))
+        Poll::Ready(this.packets[this.index - 1].write(buf))
     }
 
     fn poll_flush(self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<io::Result<()>> {

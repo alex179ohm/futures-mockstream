@@ -1,9 +1,9 @@
-use super::*;
+use futures_mockstream::*;
 use futures_util::stream::StreamExt;
 use futures_util::{AsyncReadExt, AsyncWriteExt};
 
 #[test]
-fn async_read_none() {
+fn single_read_none() {
     let mut ms = MockStream::default();
     let mut buf = [0u8; 1024];
     smol::run(async {
@@ -13,9 +13,9 @@ fn async_read_none() {
 }
 
 #[test]
-fn async_read_sized() {
+fn single_read_sized() {
     let packet = b"ciao mondo";
-    let mut ms = MockStream::from(packet);
+    let mut ms = MockStream::with_buffer(packet);
     smol::run(async {
         let mut buf = [0u8; 1024];
         let readed = ms.read(&mut buf).await.expect("failed to read");
@@ -26,7 +26,7 @@ fn async_read_sized() {
 }
 
 #[test]
-fn async_write_none() {
+fn single_write_none() {
     let buf = &[];
     let mut ms = MockStream::default();
     smol::run(async {
@@ -36,7 +36,7 @@ fn async_write_none() {
 }
 
 #[test]
-fn async_write_sized() {
+fn single_write_sized() {
     let buf = b"this is the packet";
     let mut ms = MockStream::default();
     smol::run(async {
@@ -47,9 +47,9 @@ fn async_write_sized() {
 }
 
 #[test]
-fn async_stream_none() {
+fn single_stream_none() {
     let buf: &[u8] = &[];
-    let mut ms = MockStream::from(&buf);
+    let mut ms = MockStream::with_buffer(&buf);
     smol::run(async {
         while let Some(v) = ms.next().await {
             match v {
@@ -61,9 +61,9 @@ fn async_stream_none() {
 }
 
 #[test]
-fn async_stream_sized() {
+fn single_stream_sized() {
     let buf = b"this is my packet";
-    let mut ms = MockStream::from(buf);
+    let mut ms = MockStream::with_buffer(buf);
     smol::run(async {
         while let Some(v) = ms.next().await {
             match v {
