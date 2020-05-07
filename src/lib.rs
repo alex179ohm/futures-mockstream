@@ -18,11 +18,14 @@
 use futures_core::Stream;
 use futures_io::{AsyncRead, AsyncWrite};
 use futures_task::{Context, Poll};
-use std::io::{self, Cursor, Read, Write};
+use std::io::{self, Read, Write};
 use std::pin::Pin;
 
 #[cfg(test)]
 mod tests;
+
+mod packet;
+use crate::packet::Packet;
 
 /// A Mock Stream with implements AsyncRead, AsyncWrite, and Stream from the futures crate.
 ///
@@ -31,10 +34,19 @@ mod tests;
 /// # use futures_mockstream::MockStream;
 /// let mock_stream = MockStream::from(&b"mock stream buffer"[..]);
 /// ```
-#[derive(Default, Debug)]
+#[derive(Debug)]
 pub struct MockStream {
-    buf: Cursor<Vec<u8>>,
-    from_index: usize,
+    index: usize,
+    packets: Vec<Packet>,
+}
+
+impl Default for MockStream {
+    fn default() -> Self {
+        Self {
+            index: 0,
+            packets: vec![Packet::default()],
+        }
+    }
 }
 
 impl Unpin for MockStream {}
@@ -52,8 +64,17 @@ impl MockStream {
     /// ```
     pub fn from(buf: &[u8]) -> Self {
         Self {
-            buf: Cursor::new(Vec::from(buf)),
-            from_index: 0,
+            index: 0,
+            packets: vec![Packet::from(buf)],
+        }
+    }
+}
+
+impl From<&[&[u8]]> for MockStream {
+    fn from(buf: &[&[u8]]) -> Self {
+        Self {
+            index: 0,
+            packets: vec![Packet::from(buf[0])],
         }
     }
 }
@@ -65,7 +86,13 @@ impl AsyncRead for MockStream {
         buf: &mut [u8],
     ) -> Poll<io::Result<usize>> {
         let this: &mut Self = Pin::into_inner(self);
-        Poll::Ready(this.buf.read(buf))
+        let index = if this.index < this.packets.len() - 1 {
+            this.index
+        } else {
+            0
+        };
+        this.index += 1;
+        Poll::Ready(this.packets[index].read(buf))
     }
 }
 
@@ -76,11 +103,24 @@ impl AsyncWrite for MockStream {
         buf: &[u8],
     ) -> Poll<io::Result<usize>> {
         let this: &mut Self = Pin::into_inner(self);
-        Poll::Ready(this.buf.write(buf))
+        let index = if this.index < this.packets.len() - 1 {
+            this.index
+        } else {
+            0
+        };
+        this.index += 1;
+        Poll::Ready(this.packets[index].write(buf))
     }
 
     fn poll_flush(self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<io::Result<()>> {
-        Poll::Ready(Ok(()))
+        let this: &mut Self = Pin::into_inner(self);
+        let index = if this.index < this.packets.len() - 1 {
+            this.index
+        } else {
+            0
+        };
+        this.index += 1;
+        Poll::Ready(this.packets[index].flush())
     }
 
     fn poll_close(self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<io::Result<()>> {
@@ -104,6 +144,6 @@ impl Stream for MockStream {
 
 impl AsRef<[u8]> for MockStream {
     fn as_ref(&self) -> &[u8] {
-        self.buf.get_ref()
+        self.packets[0].as_ref()
     }
 }
