@@ -21,7 +21,9 @@
     <img src="https://img.shields.io/badge/docs-latest-blue.svg?style=flat-square"
       alt="docs.rs docs" />
   </a>
-
+  <a href='https://coveralls.io/github/alex179ohm/futures-mockstream?branch=master'>
+    <img src='https://coveralls.io/repos/github/alex179ohm/futures-mockstream/badge.svg?branch=master' alt='Coverage Status' />
+  </a>
 </div>
 
 
