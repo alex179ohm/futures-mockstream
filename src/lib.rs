@@ -97,15 +97,16 @@ impl AsyncRead for MockStream {
         if this.packets.is_empty() {
             return Poll::Ready(Err(io::Error::new(
                 io::ErrorKind::Other,
-                "trying to read an empty Mockstream",
+                "trying to read an empty MockStream",
             )));
         }
         this.index += 1;
         // needed by the last poll_next call.
-        if this.index >= this.packets.len() {
-            this.index = this.len()
+        if this.index > this.packets.len() {
+            Poll::Ready(Ok(0))
+        } else {
+            Poll::Ready(this.packets[this.index - 1].read(buf))
         }
-        Poll::Ready(this.packets[this.index - 1].read(buf))
     }
 }
 
@@ -137,7 +138,7 @@ impl Stream for MockStream {
         let this: &mut Self = Pin::into_inner(self);
         let mut buf = [0u8; 1024];
         match Pin::new(this).poll_read(cx, &mut buf) {
-            Poll::Pending => Poll::Ready(None),
+            Poll::Pending => Poll::Pending,
             Poll::Ready(Ok(b)) if b == 0 => Poll::Ready(None),
             Poll::Ready(Ok(b)) => Poll::Ready(Some(Ok(Vec::from(&buf[..b])))),
             Poll::Ready(Err(e)) => Poll::Ready(Some(Err(e))),
