@@ -1,7 +1,7 @@
 <h1 align="center">Futures MockStream</h1>
 <div align="center">
   <strong>
-    MockStream which implements <a href="https://docs.rs/futures/latest/futures/io/trait.AsyncRead.html">AsyncRead</a>, <a href="https://docs.rs/futures/latest/futures/io/trait.AsyncWrite.html">AsyncWrite</a> and <a href="https://docs.rs/futures/latest/futures/stream/trait.Stream.html">Stream</a> traits from the <a href="https://crates.io/crates/futures">futures</a> crate.
+    A simple MockStream for <a href="https://docs.rs/futures/latest/futures/io/trait.AsyncRead.html">AsyncRead</a>, <a href="https://docs.rs/futures/latest/futures/io/trait.AsyncWrite.html">AsyncWrite</a> and <a href="https://docs.rs/futures/latest/futures/stream/trait.Stream.html">Stream</a> traits from the <a href="https://crates.io/crates/futures">futures</a> crate.
 
   </strong>
 </div>
