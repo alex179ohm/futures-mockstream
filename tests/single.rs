@@ -116,3 +116,16 @@ fn single_flush() {
         assert_eq!(0, readed);
     })
 }
+
+#[test]
+fn is_empty() {
+    let ms = MockStream::default();
+    assert_eq!(ms.is_empty(), true);
+}
+
+#[test]
+fn is_not_empty() {
+    let packet: &[u8] = &[];
+    let ms = MockStream::with_buffer(packet);
+    assert_eq!(ms.is_empty(), false);
+}
