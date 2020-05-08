@@ -10,7 +10,7 @@
 //!
 //!let mut ms = MockStream::from(&b"GET /index HTTP/1.1\r\n");
 //!smol::run(async {
-//!     while let Some(item) = MyConn::new(&mut ms).next().await {
+//!     while let Some(item) = MyConn::with_steam(&mut ms).next().await {
 //!         println!("{}", item);
 //!     }
 //!})
@@ -66,7 +66,7 @@ impl MockStream {
         }
     }
 
-    /// Returns the number of packets of the MockStream.
+    /// Returns the number of packets in the MockStream.
     pub fn len(&self) -> usize {
         self.packets.len()
     }
@@ -103,6 +103,7 @@ impl AsyncRead for MockStream {
         this.index += 1;
         // needed by the last poll_next call.
         if this.index > this.packets.len() {
+            this.index = this.packets.len();
             Poll::Ready(Ok(0))
         } else {
             Poll::Ready(this.packets[this.index - 1].read(buf))
