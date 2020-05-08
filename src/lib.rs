@@ -22,7 +22,7 @@ use std::io::{self, Read, Write};
 use std::pin::Pin;
 
 mod packet;
-use crate::packet::Packet;
+pub use crate::packet::Packet;
 
 /// A Mock Stream with implements AsyncRead, AsyncWrite, and Stream from the futures crate.
 ///
