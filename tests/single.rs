@@ -12,7 +12,7 @@ fn error_read() {
 }
 
 #[test]
-fn single_read_empty() {
+fn read_empty() {
     let packet: &[u8] = &[];
     let mut ms = MockStream::with_buffer(packet);
     let mut buf = [0u8; 1024];
@@ -23,7 +23,7 @@ fn single_read_empty() {
 }
 
 #[test]
-fn single_read_sized() {
+fn read_sized() {
     let packet = b"ciao mondo";
     let mut ms = MockStream::with_buffer(packet);
     smol::run(async {
@@ -36,7 +36,7 @@ fn single_read_sized() {
 }
 
 #[test]
-fn single_write_empty() {
+fn write_empty() {
     let buf = &[];
     let mut ms = MockStream::default();
     smol::run(async {
@@ -47,7 +47,7 @@ fn single_write_empty() {
 }
 
 #[test]
-fn single_write() {
+fn write_sized() {
     let buf = b"this is the packet";
     let mut ms = MockStream::default();
     smol::run(async {
@@ -58,7 +58,7 @@ fn single_write() {
 }
 
 #[test]
-fn single_stream_empty() {
+fn stream_empty() {
     let buf: &[u8] = &[];
     let mut ms = MockStream::with_buffer(&buf);
     smol::run(async {
@@ -72,7 +72,7 @@ fn single_stream_empty() {
 }
 
 #[test]
-fn single_stream() {
+fn stream_sized() {
     let buf = b"this is my packet";
     let mut ms = MockStream::with_buffer(buf);
     smol::run(async {
@@ -89,7 +89,7 @@ fn single_stream() {
 }
 
 #[test]
-fn single_flush_empty() {
+fn flush_empty() {
     let buf: &[u8] = &[];
     let mut ms = MockStream::with_buffer(&buf);
     smol::run(async {
@@ -103,7 +103,7 @@ fn single_flush_empty() {
 }
 
 #[test]
-fn single_flush() {
+fn flush_sized() {
     let packet = b"this is my brocken packet";
     let mut ms = MockStream::with_buffer(packet);
     smol::run(async {
@@ -128,4 +128,13 @@ fn is_not_empty() {
     let packet: &[u8] = &[];
     let ms = MockStream::with_buffer(packet);
     assert_eq!(ms.is_empty(), false);
+}
+
+#[test]
+fn close_ok() {
+    let mut ms = MockStream::default();
+    smol::run(async {
+        let res = ms.close().await;
+        assert!(res.is_ok());
+    })
 }

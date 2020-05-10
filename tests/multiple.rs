@@ -2,8 +2,9 @@ use futures_mockstream::*;
 use futures_util::stream::StreamExt;
 use futures_util::{AsyncReadExt, AsyncWriteExt};
 
+#[allow(clippy::needless_range_loop)]
 #[test]
-fn multiple_read_empty() {
+fn read_empty() {
     let packets: &[&[u8]] = &[&[], &[]];
     let mut ms = MockStream::from(&packets[..]);
     smol::run(async {
@@ -16,8 +17,9 @@ fn multiple_read_empty() {
     })
 }
 
+#[allow(clippy::needless_range_loop)]
 #[test]
-fn multiple_read() {
+fn read_sized() {
     let packets: &[&[u8]] = &[&b"first packet"[..], &b"second packet"[..]];
     let mut ms = MockStream::from(&packets[..]);
     smol::run(async {
@@ -32,7 +34,7 @@ fn multiple_read() {
 }
 
 #[test]
-fn multiple_write_empty() {
+fn write_empty() {
     let packets: &[&[u8]] = &[&[], &[]];
     let mut ms = MockStream::default();
     smol::run(async {
@@ -45,7 +47,7 @@ fn multiple_write_empty() {
 }
 
 #[test]
-fn multiple_write() {
+fn write_sized() {
     let packets: &[&[u8]] = &[&b"first packet"[..], &b"second packet"[..]];
     let mut ms = MockStream::from(&packets[..]);
     smol::run(async {
@@ -58,7 +60,7 @@ fn multiple_write() {
 }
 
 #[test]
-fn multiple_stream_empty() {
+fn stream_empty() {
     let packets: &[&[u8]] = &[&[], &[]];
     let mut ms = MockStream::from(&packets[..]);
     smol::run(async {
@@ -71,7 +73,7 @@ fn multiple_stream_empty() {
 }
 
 #[test]
-fn multiple_stream() {
+fn stream_sized() {
     let packets: &[&[u8]] = &[&b"first packet"[..], &b"second packet"[..]];
     let mut ms = MockStream::from(&packets[..]);
     smol::run(async {
@@ -83,8 +85,9 @@ fn multiple_stream() {
     })
 }
 
+#[allow(clippy::needless_range_loop)]
 #[test]
-fn multiple_flush_empty() {
+fn flush_empty() {
     let packets: &[&[u8]] = &[&[], &[]];
     let mut ms = MockStream::default();
     smol::run(async {
@@ -98,8 +101,9 @@ fn multiple_flush_empty() {
     })
 }
 
+#[allow(clippy::needless_range_loop)]
 #[test]
-fn multiple_flush() {
+fn flush_sized() {
     let packets: &[&[u8]] = &[&b"first packet"[..], &b"second packet"[..]];
     let mut ms = MockStream::default();
     smol::run(async {
