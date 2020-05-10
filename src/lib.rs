@@ -49,10 +49,10 @@ impl Default for MockStream {
 impl Unpin for MockStream {}
 
 impl MockStream {
-    /// Creates a MockStream from a reference of array.
+    /// Creates a MockStream from a reference of array of bytes.
     ///
     /// # Arguments
-    /// A reference of array of u8.
+    /// A reference array of u8.
     ///
     /// # Examples
     /// ```
@@ -114,7 +114,7 @@ impl AsyncRead for MockStream {
 impl AsyncWrite for MockStream {
     fn poll_write(
         self: Pin<&mut Self>,
-        _cx: &mut Context<'_>,
+        _: &mut Context<'_>,
         buf: &[u8],
     ) -> Poll<io::Result<usize>> {
         let this: &mut Self = Pin::into_inner(self);
