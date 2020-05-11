@@ -18,7 +18,9 @@
 use futures_core::Stream;
 use futures_io::{AsyncRead, AsyncWrite};
 use futures_task::{Context, Poll};
+use libc::{c_int, fclose, fflush, fileno, fopen, fread, fwrite, FILE};
 use std::io::{self, Read, Write};
+use std::os::unix::io::RawFd;
 use std::pin::Pin;
 
 mod packet;
@@ -35,6 +37,7 @@ pub use crate::packet::Packet;
 pub struct MockStream {
     index: usize,
     packets: Vec<Packet>,
+    //fd: RawFd,
 }
 
 impl Default for MockStream {

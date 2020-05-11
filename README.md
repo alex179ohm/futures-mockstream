@@ -28,7 +28,7 @@
   </a>
 </div>
 
-
+Futures\_mockstream allows Stream implementations to be tested without a real tcp/tls server or client.
 
 # Install
 
