@@ -16,6 +16,7 @@ readme = "README.md"
 futures-io = "0.3.4"
 futures-task = "0.3.4"
 futures-core = "0.3.4"
+libc = "0.2"
 
 [dev-dependencies]
 smol = "0.1.4"
