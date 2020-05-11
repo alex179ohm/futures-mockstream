@@ -13,7 +13,9 @@
     <img src="https://github.com/alex179ohm/futures-mockstream/workflows/Build/badge.svg"
     alt="Tests status" />
   </a>
-
+  <a href="https://github.com/alex179ohm/futures-mockstream">
+    <img alt="Crates.io" src="https://img.shields.io/crates/l/futures-mockstream">
+  </a>
   <a href="https://crates.io/crates/futures-mockstream">
     <img src="https://img.shields.io/crates/v/futures-mockstream.svg?style=flat-square"/>
   </a>

@@ -17,6 +17,7 @@ futures-io = "0.3.4"
 futures-task = "0.3.4"
 futures-core = "0.3.4"
 libc = "0.2"
+cfg-if = "0.1"
 
 [dev-dependencies]
 smol = "0.1.4"
